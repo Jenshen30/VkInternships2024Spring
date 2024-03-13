@@ -5,7 +5,7 @@
 который транслирует запросы пришедшие к нему на https://jsonplaceholder.typicode.com/guide/.
 
 При этом:
-- запросы кэшируются при помощи LoadingCache из небезызвестной Guava.
+- запросы кэшируются при помощи LoadingCache из небезызвестной библиотеки Guava.
 - ведется логирование обращений к прокси серверу на h2 database.
 - имеются необходимые роли (ROLE_ADMIN, ROLE_POST, ROLE_USER, ROLE_ALBUMS)
 
@@ -22,11 +22,16 @@
 
 
 При этом с url'ов /audits/** не записываются в бд, это можно сделать,
-добавив функцию RedirectionService#auditTracking в соответствующие обработчики.
+добавив функцию 
+[RedirectionService#auditTracking](/src/main/java/com/vkinterships/VkTask/services/RedirectionService.java) 
+в соответствующие обработчики, если это необходимо.
 
 ## Про тесты.
-Чтобы корректно работал DBTest нужно запустить CreateTable,
-для инициализации иаблички audits в бд. 
+Чтобы корректно работал DBTest нужно запустить 
+[CreateTable](/src/test/java/com/vkinterships/VkTask/CreateTable.java),
+для инициализации таблички audits в h2 database. 
 
-Так же создан DestructTable, который удалит таблицу audits,
+Так же создан
+[DestructTable](/src/test/java/com/vkinterships/VkTask/DestructTable.java),
+который удалит таблицу audits,
 если это необходимо.
