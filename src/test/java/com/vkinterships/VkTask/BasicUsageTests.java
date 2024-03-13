@@ -20,7 +20,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
-public class BasicConfigurationIntegrationTest {
+public class BasicUsageTests {
 
     TestRestTemplate restTemplate;
     URL base;
@@ -141,7 +141,8 @@ public class BasicConfigurationIntegrationTest {
 
     }
 
-    private void getResponseAndCheck(String url, HttpStatus expected, boolean checkBody, String body) throws MalformedURLException {
+    private void getResponseAndCheck(String url, HttpStatus expected, boolean checkBody, String body)
+            throws MalformedURLException {
         ResponseEntity<String> response =
                 restTemplate.getForEntity(new URL(url).toString(), String.class);
 
