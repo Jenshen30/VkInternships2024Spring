@@ -10,7 +10,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-public class RedirectionFromUsersController extends RedirectAbstract {
+public class RedirectionFromUsersController {
+
+    private static final String BASIC_URL = "https://jsonplaceholder.typicode.com";
+
+    private final RedirectionService redirectionService;
+
+    public RedirectionFromUsersController(RedirectionService redirectionService) {
+        this.redirectionService = redirectionService;
+    }
 
     @RequestMapping(value = "users",
             method = {RequestMethod.POST, RequestMethod.GET})
@@ -18,7 +26,7 @@ public class RedirectionFromUsersController extends RedirectAbstract {
                                             final HttpServletRequest request,
                                             final HttpEntity<String> entity) {
 
-        return RedirectionService.commonRedirect(BASIC_URL + "/" + "users", allRequestParams, request, entity);
+        return redirectionService.commonRedirect(BASIC_URL + "/" + "users", allRequestParams, request, entity);
     }
 
     @RequestMapping(value = "users/{id}",
@@ -30,7 +38,7 @@ public class RedirectionFromUsersController extends RedirectAbstract {
                                           final HttpServletRequest request,
                                           final HttpEntity<String> entity) {
 
-        return RedirectionService.commonRedirect(
+        return redirectionService.commonRedirect(
                 String.join("/", BASIC_URL, "users", id),
                 allRequestParams, request, entity);
 
@@ -43,7 +51,7 @@ public class RedirectionFromUsersController extends RedirectAbstract {
                                             final HttpServletRequest request,
                                             final HttpEntity<String> entity) {
 
-        return RedirectionService.commonRedirect(
+        return redirectionService.commonRedirect(
                 String.join("/", BASIC_URL, "users", id, "albums"),
                 allRequestParams,
                 request, entity);
@@ -57,7 +65,7 @@ public class RedirectionFromUsersController extends RedirectAbstract {
                                             final HttpServletRequest request,
                                             final HttpEntity<String> entity) {
 
-        return RedirectionService.commonRedirect(
+        return redirectionService.commonRedirect(
                 String.join("/", BASIC_URL, "users", id, "todos"),
                 allRequestParams,
                 request, entity);
@@ -71,7 +79,7 @@ public class RedirectionFromUsersController extends RedirectAbstract {
                                         final HttpServletRequest request,
                                         final HttpEntity<String> entity) {
 
-        return RedirectionService.commonRedirect(
+        return redirectionService.commonRedirect(
                 String.join("/", BASIC_URL, "users", id, "posts"),
                 allRequestParams,
                 request, entity);

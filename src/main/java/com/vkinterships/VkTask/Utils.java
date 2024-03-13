@@ -1,5 +1,7 @@
 package com.vkinterships.VkTask;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Utils {
@@ -7,13 +9,11 @@ public class Utils {
         if (mp.isEmpty()) {
             return "";
         }
-        StringBuilder builder = new StringBuilder("?");
+        List<String> builder = new ArrayList<>();
         for (var entry : mp.entrySet()) {
-            builder.append(entry.getKey())
-                    .append("=")
-                    .append(entry.getValue());
+            builder.add(entry.getKey() + "=" + entry.getValue());
 
         }
-        return builder.toString();
+        return "?" + String.join("&", builder);
     }
 }

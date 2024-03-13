@@ -10,7 +10,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-public class RedirectionFromPostsController extends RedirectAbstract {
+public class RedirectionFromPostsController {
+
+    private static final String BASIC_URL = "https://jsonplaceholder.typicode.com";
+
+    private final RedirectionService redirectionService;
+
+    public RedirectionFromPostsController(RedirectionService redirectionService) {
+        this.redirectionService = redirectionService;
+    }
 
     @RequestMapping(value = "posts",
             method = {RequestMethod.POST, RequestMethod.GET})
@@ -18,7 +26,7 @@ public class RedirectionFromPostsController extends RedirectAbstract {
                                             final HttpServletRequest request,
                                             final HttpEntity<String> entity) {
 
-        return RedirectionService.commonRedirect(BASIC_URL + "/" + "posts", allRequestParams, request, entity);
+        return redirectionService.commonRedirect(BASIC_URL + "/" + "posts", allRequestParams, request, entity);
     }
 
     @RequestMapping(value = "posts/{id}",
@@ -30,7 +38,7 @@ public class RedirectionFromPostsController extends RedirectAbstract {
                                           final HttpServletRequest request,
                                           final HttpEntity<String> entity) {
 
-        return RedirectionService.commonRedirect(
+        return redirectionService.commonRedirect(
                 String.join("/", BASIC_URL, "posts", id),
                 allRequestParams, request, entity);
     }
@@ -42,7 +50,7 @@ public class RedirectionFromPostsController extends RedirectAbstract {
                                             final HttpServletRequest request,
                                             final HttpEntity<String> entity) {
 
-        return RedirectionService.commonRedirect(
+        return redirectionService.commonRedirect(
                 String.join("/", BASIC_URL, "posts", id, "comments"),
                 allRequestParams,
                 request, entity);

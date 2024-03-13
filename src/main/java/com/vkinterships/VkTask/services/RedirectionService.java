@@ -4,19 +4,30 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.vkinterships.VkTask.Utils;
+import com.vkinterships.VkTask.entities.Audit;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
+import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 
+@Service
 public class RedirectionService {
 
-    private static final LoadingCache<CachingRequest, ResponseEntity<String>> memo = CacheBuilder.newBuilder()
+    private final AuditService auditService;
+
+
+    private final LoadingCache<CachingRequest, ResponseEntity<String>> memo = CacheBuilder.newBuilder()
             .maximumSize(100)
             .build(new CacheLoader<>() {
                 @Override
@@ -25,8 +36,12 @@ public class RedirectionService {
                 }
             });
 
+    public RedirectionService(AuditService auditService) {
+        this.auditService = auditService;
+    }
 
-    public static ResponseEntity<String> commonRedirect(final String path,
+
+    public ResponseEntity<String> commonRedirect(final String path,
                                                   @RequestParam Map<String,String> allRequestParams,
                                                   final HttpServletRequest request,
                                                   final HttpEntity<String> entity) {
@@ -41,7 +56,21 @@ public class RedirectionService {
         return memo.getUnchecked(cached);
     }
 
-    private static ResponseEntity<String> makeRequest(CachingRequest cached) {
+    public void auditTracking(CachingRequest cached) {
+        OffsetDateTime contectionStart = OffsetDateTime.now();
+        Timestamp connectionTimestamp = Timestamp.valueOf(
+                contectionStart.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime());
+
+        UserDetails userDetails =
+                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Audit audit = new Audit(userDetails.getUsername(), cached.path, connectionTimestamp);
+
+        auditService.createAudit(audit);
+    }
+
+    private ResponseEntity<String> makeRequest(CachingRequest cached) {
+        auditTracking(cached);
 
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.exchange(
@@ -66,5 +95,4 @@ public class RedirectionService {
             this.allRequestParams = allRequestParams;
         }
     }
-
 }

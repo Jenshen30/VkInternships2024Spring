@@ -11,7 +11,11 @@ import java.util.List;
 public class AuditService {
 
     @Autowired
-    private AuditRepository auditRepository;
+    private final AuditRepository auditRepository;
+
+    public AuditService(AuditRepository auditRepository) {
+        this.auditRepository = auditRepository;
+    }
 
     public List<Audit> getAllAudits() {
         return auditRepository.findAll();
@@ -21,7 +25,7 @@ public class AuditService {
         return auditRepository.findById(id).orElse(null);
     }
 
-    public Audit createAudit(Audit book) {
-        return auditRepository.save(book);
+    public Audit createAudit(Audit audit) {
+        return auditRepository.save(audit);
     }
 }

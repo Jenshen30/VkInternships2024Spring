@@ -31,10 +31,10 @@ public class Audit {
     public Audit() {
     }
 
-    public Audit(Long id, String userName, String url) {
-        this.id = id;
+    public Audit(String userName, String url, Timestamp created_at) {
         this.USER_NAME = userName;
         this.url = url;
+        this.created_at = created_at;
     }
 
     public Long getId() {

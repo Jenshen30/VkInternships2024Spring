@@ -11,7 +11,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-public class RedirectionFromAlbums extends RedirectAbstract {
+public class RedirectionFromAlbumsController {
+
+    private static final String BASIC_URL = "https://jsonplaceholder.typicode.com";
+
+    private final RedirectionService redirectionService;
+
+    public RedirectionFromAlbumsController(RedirectionService redirectionService) {
+        this.redirectionService = redirectionService;
+    }
 
     @RequestMapping(value = "albums",
             method = {RequestMethod.POST, RequestMethod.GET})
@@ -19,7 +27,7 @@ public class RedirectionFromAlbums extends RedirectAbstract {
                                             final HttpServletRequest request,
                                             final HttpEntity<String> entity) {
 
-        return RedirectionService.commonRedirect(BASIC_URL + "/" + "albums", allRequestParams, request, entity);
+        return redirectionService.commonRedirect(BASIC_URL + "/" + "albums", allRequestParams, request, entity);
     }
 
     @RequestMapping(value = "albums/{id}",
@@ -31,7 +39,7 @@ public class RedirectionFromAlbums extends RedirectAbstract {
                                           final HttpServletRequest request,
                                           final HttpEntity<String> entity) {
 
-        return RedirectionService.commonRedirect(
+        return redirectionService.commonRedirect(
                 String.join("/", BASIC_URL, "albums", id),
                 allRequestParams, request, entity);
     }

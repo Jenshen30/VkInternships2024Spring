@@ -50,20 +50,15 @@ public class DBTest {
     @Test
     void dataBaseEmpty() throws MalformedURLException {
         restTemplate = new TestRestTemplate("admin", "admin");
-            //stmt.executeUpdate("DROP TABLE audits;");
-
-//            stmt.executeUpdate("CREATE TABLE audits (\n" +
-//                    "  id BIGINT AUTO_INCREMENT NOT NULL,\n" +
-//                    "   USER_NAME VARCHAR(255) NOT NULL,\n" +
-//                    "   url VARCHAR(255) NOT NULL,\n" +
-//                    "   created_at timestamp NOT NULL,\n" +
-//                    "   CONSTRAINT pk_audits PRIMARY KEY (id)\n" +
-//                    ");");
-
-
-
         ResponseEntity<String> response =
                 restTemplate.getForEntity(new URL("http://localhost:" + port + "/api/audits").toString(), String.class);
+
+        response =
+                restTemplate.getForEntity(new URL("http://localhost:" + port + "/api/users").toString(), String.class);
+
+        response =
+                restTemplate.getForEntity(new URL("http://localhost:" + port + "/api/audits").toString(), String.class);
+
 
         System.err.println(response.getBody());
 

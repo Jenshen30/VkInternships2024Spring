@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -12,9 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.*;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -29,24 +28,24 @@ public class BasicConfigurationIntegrationTest {
     @LocalServerPort
     int port;
 
-
     @Test
-    public void whenLoggedPostRequestsHomePage_ThenSuccess()
+    public void whenLoggedPostRequests_ThenSuccess()
             throws IllegalStateException, IOException {
 
         restTemplate = new TestRestTemplate("post", "password");
-        base = new URL("http://localhost:" + port);
 
-        ResponseEntity<String> response =
-                restTemplate.getForEntity(new URL("http://localhost:" + port + "/api/posts/1").toString(), String.class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(response.getBody(), "{\n" +
-                "  \"userId\": 1,\n" +
-                "  \"id\": 1,\n" +
-                "  \"title\": \"sunt aut facere repellat provident occaecati excepturi optio reprehenderit\",\n" +
-                "  \"body\": \"quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto\"\n" +
-                "}");
+        getResponseAndCheck("http://localhost:" + port + "/api/posts/1",
+                HttpStatus.OK,
+                true,
+                "{\n" +
+                        "  \"userId\": 1,\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"title\": \"sunt aut facere repellat provident occaecati " +
+                        "excepturi optio reprehenderit\",\n" +
+                        "  \"body\": \"quia et suscipit\\nsuscipit recusandae consequuntur expedita et " +
+                        "cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem " +
+                        "eveniet architecto\"\n" +
+                        "}");
     }
 
     @Test
@@ -56,102 +55,100 @@ public class BasicConfigurationIntegrationTest {
         restTemplate = new TestRestTemplate("user", "wrongpassword");
         base = new URL("http://localhost:" + port + "/api/posts/1");
 
-        ResponseEntity<String> response =
-                restTemplate.getForEntity(base.toString(), String.class);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        getResponseAndCheck("http://localhost:" + port + "/api/posts/1",
+                HttpStatus.UNAUTHORIZED,
+                false, "");
     }
 
     @Test
-    public void whenLoggedUserRequestsHomePage_ThenSuccess()
+    public void whenLoggedUserRequests_ThenSuccess()
             throws IllegalStateException, IOException {
 
         restTemplate = new TestRestTemplate("user", "password");
-        base = new URL("http://localhost:" + port);
 
-        ResponseEntity<String> response =
-                restTemplate.getForEntity(new URL("http://localhost:" + port + "/api/users/1?name=Leanne Graham").toString(), String.class);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(response.getBody(), "{\n" +
-                "  \"id\": 1,\n" +
-                "  \"name\": \"Leanne Graham\",\n" +
-                "  \"username\": \"Bret\",\n" +
-                "  \"email\": \"Sincere@april.biz\",\n" +
-                "  \"address\": {\n" +
-                "    \"street\": \"Kulas Light\",\n" +
-                "    \"suite\": \"Apt. 556\",\n" +
-                "    \"city\": \"Gwenborough\",\n" +
-                "    \"zipcode\": \"92998-3874\",\n" +
-                "    \"geo\": {\n" +
-                "      \"lat\": \"-37.3159\",\n" +
-                "      \"lng\": \"81.1496\"\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"phone\": \"1-770-736-8031 x56442\",\n" +
-                "  \"website\": \"hildegard.org\",\n" +
-                "  \"company\": {\n" +
-                "    \"name\": \"Romaguera-Crona\",\n" +
-                "    \"catchPhrase\": \"Multi-layered client-server neural-net\",\n" +
-                "    \"bs\": \"harness real-time e-markets\"\n" +
-                "  }\n" +
-                "}");
+        getResponseAndCheck("http://localhost:" + port + "/api/users/1?name=Leanne Graham",
+                HttpStatus.OK,
+                true,
+                "{\n" +
+                        "  \"id\": 1,\n" +
+                        "  \"name\": \"Leanne Graham\",\n" +
+                        "  \"username\": \"Bret\",\n" +
+                        "  \"email\": \"Sincere@april.biz\",\n" +
+                        "  \"address\": {\n" +
+                        "    \"street\": \"Kulas Light\",\n" +
+                        "    \"suite\": \"Apt. 556\",\n" +
+                        "    \"city\": \"Gwenborough\",\n" +
+                        "    \"zipcode\": \"92998-3874\",\n" +
+                        "    \"geo\": {\n" +
+                        "      \"lat\": \"-37.3159\",\n" +
+                        "      \"lng\": \"81.1496\"\n" +
+                        "    }\n" +
+                        "  },\n" +
+                        "  \"phone\": \"1-770-736-8031 x56442\",\n" +
+                        "  \"website\": \"hildegard.org\",\n" +
+                        "  \"company\": {\n" +
+                        "    \"name\": \"Romaguera-Crona\",\n" +
+                        "    \"catchPhrase\": \"Multi-layered client-server neural-net\",\n" +
+                        "    \"bs\": \"harness real-time e-markets\"\n" +
+                        "  }\n" +
+                        "}");
     }
 
+    @Test
+    void userDoRequestToAlbums() throws MalformedURLException {
+        restTemplate = new TestRestTemplate("user", "password");
+
+        getResponseAndCheck("http://localhost:" + port + "/api/albums",
+                HttpStatus.FORBIDDEN,
+                false,
+                "");
+    }
 
     @Test
-    void dataBase() throws MalformedURLException {
-        restTemplate = new TestRestTemplate("admin", "admin");
+    void tryHttpParams() throws MalformedURLException {
+        restTemplate = new TestRestTemplate("albums", "password");
 
-        try {
-            Class.forName("org.h2.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:h2:file:~/h2/VKTEST", "user", "password");
-            System.out.println("Connection successful!");
+        getResponseAndCheck("http://localhost:" + port + "/api/albums?id=1&userId=1",
+                HttpStatus.OK,
+                true,
+                "[\n" +
+                        "  {\n" +
+                        "    \"userId\": 1,\n" +
+                        "    \"id\": 1,\n" +
+                        "    \"title\": \"quidem molestiae enim\"\n" +
+                        "  }\n" +
+                        "]");
+    }
 
-            Statement stmt = conn.createStatement();
-            //stmt.executeUpdate("DROP TABLE audits;");
-
-//            stmt.executeUpdate("CREATE TABLE audits (\n" +
-//                    "  id BIGINT AUTO_INCREMENT NOT NULL,\n" +
-//                    "   USER_NAME VARCHAR(255) NOT NULL,\n" +
-//                    "   url VARCHAR(255) NOT NULL,\n" +
-//                    "   created_at timestamp NOT NULL,\n" +
-//                    "   CONSTRAINT pk_audits PRIMARY KEY (id)\n" +
-//                    ");");
+    @Test
+    void checkPUT() {
+        restTemplate = new TestRestTemplate("post", "password");
 
 
-            System.out.println("created!");
+        String url = "http://localhost:" + port + "/api/posts/1";
+        HttpEntity<String> request =
+                new HttpEntity<>("{\"id\":1,\"title\":\"foo\",\"body\":\"bar\",\"userId\":1}");
+        ResponseEntity<String> response = restTemplate
+                .exchange(url, HttpMethod.PUT, request, String.class);
 
-            OffsetDateTime da = OffsetDateTime.now();
-            Timestamp test = Timestamp.valueOf(da.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("{\n" +
+                "  \"id\": 1,\n" +
+                "  \"title\": \"foo\",\n" +
+                "  \"body\": \"bar\",\n" +
+                "  \"userId\": 1\n" +
+                "}", response.getBody());
 
-            stmt.executeUpdate("INSERT \n" +
-                    "INTO\n" +
-                    "  audits\n" +
-                    "  (USER_NAME, url, created_at) \n" +
-                    "VALUES\n" +
-                    "  ('I', 'realUrl','" + test + "');");
+    }
 
-            System.out.println("insert!");
-
-            ResultSet rs = stmt.executeQuery("SELECT * FROM audits");
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("url");
-                String name1 = rs.getString("USER_NAME");
-                Timestamp d = rs.getTimestamp("created_at");
-                System.out.println("id: " + id + ", url: " + name + d + name1);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
+    private void getResponseAndCheck(String url, HttpStatus expected, boolean checkBody, String body) throws MalformedURLException {
         ResponseEntity<String> response =
-                restTemplate.getForEntity(new URL("http://localhost:" + port + "/api/audits").toString(), String.class);
+                restTemplate.getForEntity(new URL(url).toString(), String.class);
 
-        System.err.println(response.getBody());
+        assertEquals(expected, response.getStatusCode());
 
+        if (checkBody) {
+            assertEquals(body, response.getBody());
+        }
     }
 }
