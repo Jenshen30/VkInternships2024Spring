@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class RedirectionService {
 
-    private static LoadingCache<CachingRequest, ResponseEntity<String>> memo = CacheBuilder.newBuilder()
+    private static final LoadingCache<CachingRequest, ResponseEntity<String>> memo = CacheBuilder.newBuilder()
             .maximumSize(100)
             .build(new CacheLoader<>() {
                 @Override

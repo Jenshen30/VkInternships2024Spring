@@ -20,7 +20,7 @@ public class AuditController {
     }
 
     @GetMapping("/{id}")
-    public Audit getAuditById(@PathVariable Long id) {
-        return auditService.getAuditById(id);
+    public Audit getAuditById(@PathVariable("id") String id) {
+        return auditService.getAuditById(Long.parseLong(id));
     }
 }

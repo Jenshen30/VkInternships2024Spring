@@ -1,6 +1,8 @@
 package com.vkinterships.VkTask.database;
 
 import java.sql.*;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 public class test {
     public static void main(String[] args) {
@@ -10,11 +12,13 @@ public class test {
             System.out.println("Connection successful!");
 
             Statement stmt = conn.createStatement();
+            //stmt.executeUpdate("DROP TABLE audits;");
+
 //            stmt.executeUpdate("CREATE TABLE audits (\n" +
 //                    "  id BIGINT AUTO_INCREMENT NOT NULL,\n" +
-//                    "   userName VARCHAR(255) NOT NULL,\n" +
+//                    "   USER_NAME VARCHAR(255) NOT NULL,\n" +
 //                    "   url VARCHAR(255) NOT NULL,\n" +
-//                    "   created_at Date NOT NULL,\n" +
+//                    "   created_at timestamp NOT NULL,\n" +
 //                    "   CONSTRAINT pk_audits PRIMARY KEY (id)\n" +
 //                    ");");
 
@@ -22,14 +26,15 @@ public class test {
 
             System.out.println("created!");
 
-            Date da = new Date(2021);
+            OffsetDateTime da = OffsetDateTime.now();
+            Timestamp test = Timestamp.valueOf(da.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime());
 
             stmt.executeUpdate("INSERT \n" +
                     "INTO\n" +
                     "  audits\n" +
-                    "  (userName, url, created_at) \n" +
+                    "  (USER_NAME, url, created_at) \n" +
                     "VALUES\n" +
-                    "  ('I', 'realUrl',"+ da +");");
+                    "  ('I', 'realUrl','"+ test +"');");
 
             System.out.println("insert!");
 
@@ -37,8 +42,9 @@ public class test {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("url");
-                Date d = rs.getDate("current_date");
-                System.out.println("id: " + id + ", url: " + name + d);
+                String name1 = rs.getString("USER_NAME");
+                Timestamp d = rs.getTimestamp("created_at");
+                System.out.println("id: " + id + ", url: " + name + d + name1);
             }
 
         } catch (ClassNotFoundException | SQLException e) {
